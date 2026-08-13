@@ -1,0 +1,34 @@
+{
+  "annotations": { "list": [] },
+  "panels": [
+    {
+      "type": "graph",
+      "title": "HTTP Requests (total)",
+      "gridPos": { "x": 0, "y": 0, "w": 12, "h": 8 },
+      "targets": [
+        {
+          "expr": "http_requests_total",
+          "format": "time_series",
+          "interval": "",
+          "legendFormat": "{{method}} {{path}}",
+          "refId": "A"
+        }
+      ]
+    },
+    {
+      "type": "graph",
+      "title": "Process CPU Seconds Total",
+      "gridPos": { "x": 12, "y": 0, "w": 12, "h": 8 },
+      "targets": [
+        {
+          "expr": "process_cpu_seconds_total",
+          "format": "time_series",
+          "refId": "B"
+        }
+      ]
+    }
+  ],
+  "title": "Webhook Receiver - Basic",
+  "schemaVersion": 16,
+  "version": 1
+}
