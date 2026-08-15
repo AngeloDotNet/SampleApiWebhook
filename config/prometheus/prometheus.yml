@@ -1,0 +1,9 @@
+global:
+  scrape_interval: 15s
+  evaluation_interval: 15s
+
+scrape_configs:
+  - job_name: 'webhook_app'
+    static_configs:
+      - targets: ['app:80']   # prometheus-net expone /metrics su root del servizio app
+    metrics_path: /metrics
