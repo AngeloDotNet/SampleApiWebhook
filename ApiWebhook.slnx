@@ -1,0 +1,7 @@
+<Solution>
+  <Folder Name="/Solution Items/">
+    <File Path="docker-compose.yml" />
+    <File Path="NuGet.config" />
+  </Folder>
+  <Project Path="src/Webhook.Api/Webhook.Api.csproj" Id="dd0bfb6c-f7d0-4b54-8b44-a25e5f63cfa0" />
+</Solution>

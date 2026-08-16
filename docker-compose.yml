@@ -1,0 +1,70 @@
+version: '3.8'
+services:
+  postgres:
+    image: postgres:15
+    environment:
+      POSTGRES_USER: test
+      POSTGRES_PASSWORD: test
+      POSTGRES_DB: webhooks
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+
+  rabbit:
+    image: rabbitmq:3-management
+    environment:
+      RABBITMQ_DEFAULT_USER: guest
+      RABBITMQ_DEFAULT_PASS: guest
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+
+  app:
+    build: .
+    environment:
+      ASPNETCORE_ENVIRONMENT: "Development"
+      # override appsettings via env vars (double-underscore notation)
+      ConnectionStrings__DefaultConnection: "Host=postgres;Port=5432;Database=webhooks;Username=test;Password=test"
+      Webhook__Secret: "dev-webhook-secret"
+      Outbox__DataKeyB64: "REPLACE_WITH_BASE64_32_BYTE_KEY_PLACEHOLDER"
+      RabbitMq__Host: "rabbit"
+      RabbitMq__Username: "guest"
+      RabbitMq__Password: "guest"
+      RabbitMq__Queue: "webhooks"
+    depends_on:
+      - postgres
+      - rabbit
+    ports:
+      - "5000:80"
+    restart: unless-stopped
+
+  prometheus:
+    image: prom/prometheus:latest
+    volumes:
+      - ./prometheus/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+    command:
+      - --config.file=/etc/prometheus/prometheus.yml
+    ports:
+      - "9090:9090"
+    depends_on:
+      - app
+
+  grafana:
+    image: grafana/grafana:9.0.0
+    environment:
+      GF_SECURITY_ADMIN_USER: "admin"
+      GF_SECURITY_ADMIN_PASSWORD: "admin"
+      GF_USERS_ALLOW_SIGN_UP: "false"
+    volumes:
+      - grafana_data:/var/lib/grafana
+      - ./grafana/provisioning:/etc/grafana/provisioning:ro
+      - ./grafana/dashboards:/var/lib/grafana/dashboards:ro
+    ports:
+      - "3000:3000"
+    depends_on:
+      - prometheus
+
+volumes:
+  pgdata:
+  grafana_data:
